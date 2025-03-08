@@ -14,6 +14,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
+    compileOnly("org.projectlombok:lombok:1.18.36")
+    annotationProcessor ("org.projectlombok:lombok:1.18.36")
 }
 
 tasks.test {
