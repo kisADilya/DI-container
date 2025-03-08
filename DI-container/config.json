@@ -1,0 +1,17 @@
+{
+  "beans": {
+    "com.example.MyService": {
+      "name": "myService",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "ref": "myRepository"
+        }
+      ],
+      "properties": {
+        "timeout": "1000",
+        "maxConnections": "10"
+      }
+    }
+  }
+}
