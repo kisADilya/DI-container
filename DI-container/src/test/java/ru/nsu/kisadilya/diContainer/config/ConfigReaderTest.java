@@ -2,6 +2,7 @@ package ru.nsu.kisadilya.diContainer.config;
 
 import org.junit.jupiter.api.Test;
 import ru.nsu.kisadilya.diContainer.config.model.Bean;
+import ru.nsu.kisadilya.diContainer.config.model.BeanScope;
 import ru.nsu.kisadilya.diContainer.config.model.Config;
 
 import java.io.File;
@@ -24,7 +25,7 @@ class ConfigReaderTest {
 
         Bean bean = config.getBeans().get("com.example.MyService");
         assertEquals("myService", bean.getName());
-        assertEquals("singleton", bean.getScope());
+        assertEquals(BeanScope.SINGLETON, bean.getScope());
         assertEquals("myRepository", bean.getConstructorArgs().getFirst().getRef());
         assertEquals("1000", bean.getProperties().get("timeout"));
     }
