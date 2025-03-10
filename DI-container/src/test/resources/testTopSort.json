@@ -1,0 +1,42 @@
+{
+  "beans": {
+    "beanA": {
+      "name": "beanA",
+      "scope": "singleton",
+      "constructorArgs": {
+        "ref1": "beanB",
+        "ref2": "beanC"
+      }
+    },
+    "beanB": {
+      "name": "beanB",
+      "scope": "singleton",
+      "constructorArgs": {
+        "ref1": "beanD"
+      }
+    },
+    "beanC": {
+      "name": "beanC",
+      "scope": "singleton",
+      "constructorArgs": {
+        "ref1": "beanD",
+        "ref2": "beanE"
+      }
+    },
+    "beanD": {
+      "name": "beanD",
+      "scope": "singleton"
+    },
+    "beanE": {
+      "name": "beanE",
+      "scope": "singleton",
+      "constructorArgs": {
+        "ref1": "beanF"
+      }
+    },
+    "beanF": {
+      "name": "beanF",
+      "scope": "singleton"
+    }
+  }
+}
