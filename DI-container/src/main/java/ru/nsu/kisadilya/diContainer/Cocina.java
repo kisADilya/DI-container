@@ -15,11 +15,11 @@ public class Cocina {
     public Cocina(String configFileName) {
         config = ConfigReader.readConfig(configFileName);
         buildDependencyGraph();
-        sortedBeans = TopologicalSort.sort(dependencyGraph.getGraph());
+        sortedBeans = dependencyGraph.topologicalSort();
         initializeBeans(sortedBeans);
     }
     private void buildDependencyGraph() {
-        for (Map.Entry<String, Bean> entry : config.getBeans().entrySet()) {
+        for (var entry : config.getBeans().entrySet()) {
             String beanName = entry.getKey();
             Bean bean = entry.getValue();
             List<String> dependencies = BeanAnalyzer.getConstructorDependencies(bean);
