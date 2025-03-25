@@ -14,5 +14,4 @@ public class ConfigReader {
             throw new IllegalArgumentException("Config file " + filename + " is invalid");
         }
     }
-
 }

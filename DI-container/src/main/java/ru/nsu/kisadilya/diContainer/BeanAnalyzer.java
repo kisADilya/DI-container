@@ -28,9 +28,9 @@ public class BeanAnalyzer {
     public static List<String> getConstructorDependencies(Bean bean) {
         List<String> dependencies = new ArrayList<>();
         if (bean.getConstructorArgs() != null) {
-            for (var entry : bean.getConstructorArgs().entrySet()) {
-                if ("ref".equals(entry.getKey()) || entry.getKey().startsWith("ref")) {
-                    dependencies.add(entry.getValue());
+            for (var arg : bean.getConstructorArgs()) {
+                if ("ref".equals(arg.getType()) || arg.getType().startsWith("ref")) {
+                    dependencies.add((String) arg.getValue());
                 }
             }
         }

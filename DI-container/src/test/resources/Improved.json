@@ -1,0 +1,30 @@
+{
+  "beans": {
+    "com.example.MyService": {
+      "name": "myService",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "myRepository"
+        },
+        {
+          "type": "int",
+          "value": "5"
+        },
+        {
+          "type": "String",
+          "value": "Vyzdoravlivaite!"
+        },
+        {
+          "type": "int",
+          "value": "42"
+        }
+      ],
+      "properties": {
+        "timeout": "1000",
+        "maxConnections": "10"
+      }
+    }
+  }
+}

@@ -12,6 +12,8 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    // https://mvnrepository.com/artifact/net.javacrumbs.json-unit/json-unit-assertj
+    testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.0")
 
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
