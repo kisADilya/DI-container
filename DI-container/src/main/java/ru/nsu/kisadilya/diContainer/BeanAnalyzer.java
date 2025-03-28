@@ -2,6 +2,7 @@ package ru.nsu.kisadilya.diContainer;
 
 import jakarta.inject.Inject;
 import ru.nsu.kisadilya.diContainer.config.model.Bean;
+import ru.nsu.kisadilya.diContainer.config.model.BeanConstructorArg;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -29,8 +30,13 @@ public class BeanAnalyzer {
         List<String> dependencies = new ArrayList<>();
         if (bean.getConstructorArgs() != null) {
             for (var arg : bean.getConstructorArgs()) {
-                if ("ref".equals(arg.getType()) || arg.getType().startsWith("ref")) {
-                    dependencies.add((String) arg.getValue());
+                if (arg.getType().startsWith("ref")) {
+                    Object value = arg.getValue();
+                    if (value instanceof BeanConstructorArg) {
+                        dependencies.add(((BeanConstructorArg) value).getRef());
+                    } else if (value != null) {
+                        dependencies.add(value.toString());
+                    }
                 }
             }
         }

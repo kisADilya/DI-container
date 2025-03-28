@@ -2,11 +2,11 @@ package ru.nsu.kisadilya.diContainer.example;
 
 import jakarta.inject.Inject;
 
-public class Car {
-    private final Engine engine;
+public class Car1 {
+    private final Engine1 engine;
 
     @Inject
-    public Car(Engine engine) {
+    public Car1(Engine1 engine) {
         this.engine = engine;
         System.out.println("wroom");
     }
