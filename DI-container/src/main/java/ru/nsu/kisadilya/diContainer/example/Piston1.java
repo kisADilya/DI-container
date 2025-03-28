@@ -1,10 +1,10 @@
 package ru.nsu.kisadilya.diContainer.example;
 
-public class Piston {
+public class Piston1 {
     private String up;
     private String down;
 
-    public Piston(String up, String down) {
+    public Piston1(String up, String down) {
         this.up = up;
         this.down = down;
         System.out.println("i was crated");

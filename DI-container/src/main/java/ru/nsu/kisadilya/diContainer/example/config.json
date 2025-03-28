@@ -1,0 +1,72 @@
+{
+  "beans": {
+    "ru.nsu.kisadilya.diContainer.example.Car": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Car",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "ru.nsu.kisadilya.diContainer.example.Engine"
+        }
+      ]
+    },
+    "ru.nsu.kisadilya.diContainer.example.Engine": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Engine",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "MyPiston"
+        }
+      ]
+    },
+    "MyPiston": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Piston",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "String",
+          "value": "Golosov"
+        },
+        {
+          "type": "String",
+          "value": "Kirill"
+        }
+      ]
+    },
+    "ru.nsu.kisadilya.diContainer.example.Car1": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Car1",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "Engine1"
+        }
+      ]
+    },
+    "Engine1": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Engine1",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "MyPiston1"
+        }
+      ]
+    },
+    "MyPiston1": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Piston1",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "String",
+          "value": "ilya"
+        },
+        {
+          "type": "String",
+          "value": "Sasha"
+        }
+      ]
+    }
+  }
+}

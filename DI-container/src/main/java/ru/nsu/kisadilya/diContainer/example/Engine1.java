@@ -2,11 +2,11 @@ package ru.nsu.kisadilya.diContainer.example;
 
 import jakarta.inject.Inject;
 
-public class Engine {
-    private Piston piston;
+public class Engine1 {
+    private Piston1 piston;
 
     @Inject
-    public Engine(Piston piston) {
+    public Engine1(Piston1 piston) {
         this.piston = piston;
         System.out.println("so am i");
     }
