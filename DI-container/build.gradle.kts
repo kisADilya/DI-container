@@ -19,6 +19,12 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor ("org.projectlombok:lombok:1.18.36")
+
+    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+    implementation("net.bytebuddy:byte-buddy:1.17.4")
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation("org.apache.commons:commons-lang3:3.17.0")
 }
 
 tasks.test {

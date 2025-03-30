@@ -7,6 +7,10 @@
         {
           "type": "ref",
           "value": "ru.nsu.kisadilya.diContainer.example.Engine"
+        },
+        {
+          "type": "ref",
+          "value": "ru.nsu.kisadilya.diContainer.example.Engine"
         }
       ]
     },

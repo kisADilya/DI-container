@@ -1,41 +1,59 @@
 {
   "beans": {
     "beanA": {
-      "name": "beanA",
+      "classname": "beanA",
       "scope": "singleton",
-      "constructorArgs": {
-        "ref1": "beanB",
-        "ref2": "beanC"
-      }
+      "constructorArgs": [
+        {
+          "type": "ref1",
+          "value": "beanB"
+        },
+        {
+          "type": "ref2",
+          "value": "beanC"
+        }
+      ]
     },
     "beanB": {
-      "name": "beanB",
+      "classname": "beanB",
       "scope": "singleton",
-      "constructorArgs": {
-        "ref1": "beanD"
-      }
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "beanD"
+        }
+      ]
     },
     "beanC": {
-      "name": "beanC",
+      "classname": "beanC",
       "scope": "singleton",
-      "constructorArgs": {
-        "ref1": "beanD",
-        "ref2": "beanE"
-      }
+      "constructorArgs": [
+        {
+          "type": "ref1",
+          "value": "beanD"
+        },
+        {
+          "type": "ref2",
+          "value": "beanE"
+        }
+      ]
     },
     "beanD": {
-      "name": "beanD",
+      "classname": "beanD",
       "scope": "singleton"
     },
     "beanE": {
-      "name": "beanE",
+      "classname": "beanE",
       "scope": "singleton",
-      "constructorArgs": {
-        "ref1": "beanF"
-      }
+      "constructorArgs": [
+        {
+          "type": "ref1",
+          "value": "beanF"
+        }
+      ]
     },
     "beanF": {
-      "name": "beanF",
+      "classname": "beanF",
       "scope": "singleton"
     }
   }

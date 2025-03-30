@@ -1,7 +1,7 @@
 {
   "beans": {
     "com.example.MyService": {
-      "name": "myService",
+      "classname": "myService",
       "scope": "singleton",
       "constructorArgs":
         {
