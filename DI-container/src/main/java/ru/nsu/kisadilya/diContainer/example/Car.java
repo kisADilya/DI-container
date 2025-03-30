@@ -6,6 +6,10 @@ import jakarta.inject.Provider;
 public class Car {
     private final Engine engine;
     private final Provider<Engine> providerEngine;
+
+    @Inject
+    private Gearbox gearbox;
+
     @Inject
     public Car(Engine engine, Provider<Engine> engineProvider) {
         this.engine = engine;
@@ -16,5 +20,8 @@ public class Car {
     public void run() {
         providerEngine.get();
         engine.run();
+        gearbox.shiftUp();
+        engine.run();
+        gearbox.shiftDown();
     }
 }

@@ -14,9 +14,14 @@
         }
       ]
     },
+    "Gearbox" : {
+      "classname": "ru.nsu.kisadilya.diContainer.example.Gearbox",
+      "scope": "prototype",
+      "constructorArgs": []
+    },
     "ru.nsu.kisadilya.diContainer.example.Engine": {
       "classname": "ru.nsu.kisadilya.diContainer.example.Engine",
-      "scope": "singleton",
+      "scope": "prototype",
       "constructorArgs": [
         {
           "type": "ref",

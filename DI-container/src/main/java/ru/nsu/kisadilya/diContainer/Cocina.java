@@ -1,16 +1,18 @@
 package ru.nsu.kisadilya.diContainer;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Provider;
 import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 import ru.nsu.kisadilya.diContainer.config.ConfigReader;
 import ru.nsu.kisadilya.diContainer.config.model.Bean;
 import ru.nsu.kisadilya.diContainer.config.model.BeanConstructorArg;
+import ru.nsu.kisadilya.diContainer.config.model.BeanScope;
 import ru.nsu.kisadilya.diContainer.config.model.Config;
 import ru.nsu.kisadilya.diContainer.config.model.ConstructorArg;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,13 +35,8 @@ public class Cocina {
      * Получает бин по его типу
      */
     public <T> T getIngrediente(Class<T> beanType) {
-        String targetBeanName;
-        if (beanType.isAssignableFrom(Provider.class)) {
-            Class<?> actualBeanType = beanType.getGenericSuperclass().getClass();
-            targetBeanName = findBeanNameByType(actualBeanType);
-        } else {
-            targetBeanName = findBeanNameByType(beanType);
-        }
+        String targetBeanName = findBeanNameByType(beanType);
+
         if (targetBeanName == null) {
             throw new IllegalArgumentException("Bean of type " + beanType.getName() + " not found in config");
         }
@@ -69,9 +66,7 @@ public class Cocina {
      * Получает бин по его имени с проверкой типа
      */
     public <T> T getIngrediente(String beanName, Class<T> beanType) {
-        if (!config.getBeans().containsKey(beanName)) {
-            throw new IllegalArgumentException("Bean with name " + beanName + " not found in config");
-        }
+        checkBeanConfigPresent(beanName);
 
         List<String> requiredBeans = findAllDependencies(beanName);
 
@@ -95,6 +90,53 @@ public class Cocina {
         return beanType.cast(bean);
     }
 
+    /**
+     * Получает провайдер бина по его типу
+     */
+    public <T> Provider<T> getIngredienteProvider(Class<T> beanType) {
+        String beanName = findBeanNameByType(beanType);
+
+        if (beanName == null) {
+            throw new IllegalArgumentException("Bean of type " + beanType.getName() + " not found in config");
+        }
+
+        return getIngredienteProvider(beanName, beanType);
+    }
+
+    /**
+     * Получает провайдер бина по его имени
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Provider<T> getIngredienteProvider(String beanName) {
+        Bean beanDefinition = config.getBeans().get(beanName);
+        if (beanDefinition == null) {
+            throw new IllegalArgumentException("Prototype with name " + beanName + " not found in config");
+        }
+
+        try {
+            Class<T> beanClass = (Class<T>) Class.forName(beanDefinition.getClassname());
+            return getIngredienteProvider(beanName, beanClass);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Class not found for bean: " + beanName, e);
+        }
+    }
+
+    /**
+     * Получает провайдер бина по его имени и типу
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Provider<T> getIngredienteProvider(String beanName, Class<T> beanType) {
+        checkBeanConfigPresent(beanName);
+
+        return (Provider<T>) getProviderOf(beanName, beanType);
+    }
+
+    private void checkBeanConfigPresent(String beanName) {
+        if (!config.getBeans().containsKey(beanName)) {
+            throw new IllegalArgumentException("Bean with name " + beanName + " not found in config");
+        }
+    }
+
     private void buildDependencyGraph() {
         for (var entry : config.getBeans().entrySet()) {
             String beanName = entry.getKey();
@@ -116,31 +158,6 @@ public class Cocina {
             }
         }
         return null;
-    }
-
-    private Bean findBeanByType(Class<?> beanType) throws ClassNotFoundException {
-        Bean answer = null;
-
-        for (Bean entry : config.getBeans().values()) {
-            if (isBeanFitsInType(beanType, entry)) {
-                if (answer == null) {
-                    answer = entry;
-                } else {
-                    throw new RuntimeException("Found multiple beans for type " + beanType.getName());
-                }
-            }
-        }
-
-        return answer;
-    }
-
-    private boolean isBeanFitsInType(Class<?> beanType, Bean bean) throws ClassNotFoundException {
-        if (beanType.isInterface()) {
-            Class<?> beanClass = Class.forName(bean.getClassname());
-            return beanClass.isAssignableFrom(beanType);
-        } else {
-            return beanType.getName().equals(bean.getClassname());
-        }
     }
 
     private List<String> findAllDependencies(String beanName) {
@@ -192,85 +209,89 @@ public class Cocina {
         try {
             Constructor<?> constructor = beanClass.getConstructor(argTypes);
             Object beanInstance = constructor.newInstance(constructorArgs.toArray());
-            //TODO инициализировать поля
+
+            beanInstance = initializeFields(beanInstance);
+
             return beanInstance;
         } catch (NoSuchMethodException e) {
             //adding providers
 
-            var constructorCandidates = Arrays.stream(beanClass.getConstructors())
+            var optionalConstructor = Arrays.stream(beanClass.getConstructors())
                     .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
                     .filter(constructor -> constructor.getParameterCount() == argTypes.length)
-                    .toList();
+                    .findFirst();
 
-            if (constructorCandidates.isEmpty()) {
-                System.out.println("No constructor found");
+            if (optionalConstructor.isEmpty()) {
+                System.err.println("No constructor found");
                 throw e;
             }
-//            System.out.println("Amount of constructors" + constructorCandidates.size());
-            for (Constructor<?> constructor : constructorCandidates) {
-//                if (Arrays.stream(constructor.getParameterTypes())
-//                        .anyMatch(paramType -> !ArrayUtils.contains(argTypes, paramType)
-//                        && !(paramType.isInstance(Provider.class)
-//                                        && ArrayUtils.contains(argTypes, paramType.getGenericSuperclass().getClass()))
-//                        )) {
-//////
-//                    System.out.println("Generic is " + Arrays.toString(constructor.getParameterTypes()));
-//                    continue;
-//                }
 
-                Class<?>[] constructorArgTypes = constructor.getParameterTypes();
-                for (int i = 0; i < constructorArgTypes.length; i++) {
-                    if (constructorArgTypes[i].equals(Provider.class)) {
-                        constructorArgs.set(i, getProviderOf(argTypes[i]));
-                    }
+            var constructor = optionalConstructor.get();
+
+            Class<?>[] constructorArgTypes = constructor.getParameterTypes();
+            for (int i = 0; i < constructorArgTypes.length; i++) {
+                if (constructorArgTypes[i].equals(Provider.class)) {
+                    constructorArgs.set(i, getProviderOf(argTypes[i]));
                 }
-
-                Object beanInstance = constructor.newInstance(constructorArgs.toArray());
-                //TODO инициализировать поля
-
-                return beanInstance;
             }
 
-            System.out.println("Did not work");
-            throw e;
+            Object beanInstance = constructor.newInstance(constructorArgs.toArray());
+
+            beanInstance = initializeFields(beanInstance);
+
+            return beanInstance;
         }
     }
 
-//    private List<Object> getProviders(List<Class<?>> providerTypes) throws Exception {
-//        List<Object> providers = new ArrayList<>();
-//        for (Class<?> providerType : providerTypes) {
-//            String nameOfClassToProvide = providerType.getGenericSuperclass().getTypeName();
-//            Class<?> classToProvide = Class.forName(nameOfClassToProvide);
-//
-////            Bean bean = config.getByBeanType(nameOfClassToProvide);
-//
-//            List<Object> constructorArgs = getConstructorArgsObjects(bean);
-//
-//            Class<?>[] argTypes = constructorArgs.stream()
-//                    .map(Object::getClass)
-//                    .toArray(Class<?>[]::new);
-//
-//            var provider = ProviderFactory.createProvider(classToProvide, argTypes);
-//            providers.add(provider);
-//        }
-
-//        return providers;
-//    }
-
-    private Object getProviderOf(Class<?> clazz) throws Exception {
-
-//        String nameOfClassToProvide = providerType.getGenericSuperclass().getTypeName();
-//        Class<?> classToProvide = Class.forName(nameOfClassToProvide);
-
+    private Object getProviderOf(Class<?> clazz) {
         Bean bean = config.getByBeanType(clazz.getName());
+        if (bean == null) {
+            throw new IllegalArgumentException("Bean of type " + clazz.getName() + " not found in config");
+        }
+        String beanName = findBeanNameByType(clazz);
+
+        return getProviderOf(beanName, clazz);
+    }
+
+    private Object getProviderOf(String beanName, Class<?> clazz) {
+        Bean bean = config.getBeans().get(beanName);
+        if (bean.getScope() != BeanScope.PROTOTYPE) {
+            throw new IllegalArgumentException("Bean of type " + beanName + " is not prototype");
+        }
 
         List<Object> constructorArgs = getConstructorArgsObjects(bean);
 
-        Class<?>[] argTypes = constructorArgs.stream()
-                .map(Object::getClass)
-                .toArray(Class<?>[]::new);
-
         return ProviderFactory.createProvider(clazz, constructorArgs.toArray());
+    }
+
+    private Object initializeFields(Object bean) {
+        List<Field> fieldsToInit = Arrays.stream(bean.getClass().getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Inject.class))
+                .toList();
+
+        for (Field field : fieldsToInit) {
+            field.setAccessible(true);
+            String fieldBeanName = null;
+            if (field.isAnnotationPresent(Named.class)) {
+                fieldBeanName = field.getAnnotation(Named.class).value();
+            }
+            Object fieldBean;
+
+            if (fieldBeanName != null) {
+                fieldBean = getIngrediente(fieldBeanName, field.getType());
+            } else {
+                fieldBean = getIngrediente(field.getType());
+            }
+
+            try {
+                field.set(bean, fieldBean);
+            } catch (IllegalAccessException e) {
+                //never thrown
+                throw new RuntimeException(e);
+            }
+        }
+
+        return bean;
     }
 
     private List<Object> getConstructorArgsObjects(Bean beanDefinition) {
