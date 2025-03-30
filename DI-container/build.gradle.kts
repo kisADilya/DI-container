@@ -22,9 +22,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
     implementation("net.bytebuddy:byte-buddy:1.17.4")
-
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation("org.apache.commons:commons-lang3:3.17.0")
 }
 
 tasks.test {
