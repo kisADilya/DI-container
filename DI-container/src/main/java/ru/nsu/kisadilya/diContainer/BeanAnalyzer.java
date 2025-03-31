@@ -7,7 +7,6 @@ import ru.nsu.kisadilya.diContainer.config.model.BeanConstructorArg;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BeanAnalyzer {
 
