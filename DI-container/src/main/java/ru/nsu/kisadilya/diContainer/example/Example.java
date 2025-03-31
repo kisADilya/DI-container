@@ -6,9 +6,24 @@ import ru.nsu.kisadilya.diContainer.Cocina;
 
 
 public class Example {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Cocina cocina = new Cocina("src/main/java/ru/nsu/kisadilya/diContainer/example/config.json");
+        ThreadExample ex = cocina.getIngrediente("ThreadScopeExample");
+        Runnable task1 = () -> {
+            System.out.println(ex.getValue());
+        };
 
+        Runnable task2 = () -> {
+            System.out.println(ex.getValue());
+        };
+
+        Thread t1 = new Thread(task1, "Thread-1");
+        Thread t2 = new Thread(task2, "Thread-2");
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
 //        Car1 car1 = cocina.getIngrediente(Car1.class);
         Piston piston = cocina.getIngrediente("MyPiston");
         piston.up();

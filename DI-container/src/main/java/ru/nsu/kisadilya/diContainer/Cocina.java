@@ -203,6 +203,10 @@ public class Cocina {
 
         List<Object> constructorArgs = getConstructorArgsObjects(beanDefinition);
 
+        if (beanDefinition.getScope() == BeanScope.THREAD) {
+            return ThreadFactory.createThreadScopedBean(beanClass, constructorArgs);
+        }
+
         Class<?>[] argTypes = constructorArgs.stream()
                 .map(Object::getClass)
                 .toArray(Class<?>[]::new);
