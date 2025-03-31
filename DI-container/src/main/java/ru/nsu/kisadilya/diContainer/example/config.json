@@ -1,24 +1,12 @@
 {
   "beans": {
     "ru.nsu.kisadilya.diContainer.example.Car": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.Car",
-      "scope": "singleton",
-      "constructorArgs": [
-        {
-          "type": "ref",
-          "value": "ru.nsu.kisadilya.diContainer.example.Engine"
-        }
-      ]
+      "classname": "ru.nsu.kisadilya.diContainer.example.CarInterfaceTest",
+      "scope": "singleton"
     },
-    "ru.nsu.kisadilya.diContainer.example.Engine": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.Engine",
-      "scope": "singleton",
-      "constructorArgs": [
-        {
-          "type": "ref",
-          "value": "MyPiston"
-        }
-      ]
+    "EngineV8": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.EngineV8",
+      "scope": "singleton"
     },
     "MyPiston": {
       "classname": "ru.nsu.kisadilya.diContainer.example.Piston",

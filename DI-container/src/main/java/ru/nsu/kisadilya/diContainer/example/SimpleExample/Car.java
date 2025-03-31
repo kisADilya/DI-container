@@ -1,4 +1,5 @@
-package ru.nsu.kisadilya.diContainer.example;
+package ru.nsu.kisadilya.diContainer.example.SimpleExample;
+
 
 public class Car {
     private final Engine engine;

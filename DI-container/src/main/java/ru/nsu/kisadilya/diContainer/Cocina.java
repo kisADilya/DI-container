@@ -1,13 +1,16 @@
 package ru.nsu.kisadilya.diContainer;
 
+import jakarta.inject.Inject;
 import lombok.Getter;
 import ru.nsu.kisadilya.diContainer.config.ConfigReader;
 import ru.nsu.kisadilya.diContainer.config.model.Bean;
 import ru.nsu.kisadilya.diContainer.config.model.BeanConstructorArg;
 import ru.nsu.kisadilya.diContainer.config.model.Config;
 import ru.nsu.kisadilya.diContainer.config.model.ConstructorArg;
+import ru.nsu.kisadilya.diContainer.config.model.Named;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,23 +91,13 @@ public class Cocina {
         for (var entry : config.getBeans().entrySet()) {
             String beanName = entry.getKey();
             Bean bean = entry.getValue();
-            List<String> dependencies = BeanAnalyzer.getConstructorDependencies(bean);
+            List<String> dependencies = BeanAnalyzer.getConstructorDependencies(bean, config.getBeans());
             dependencyGraph.addDependency(beanName, dependencies);
         }
     }
 
     private String findBeanNameByType(Class<?> beanType) {
-        for (Map.Entry<String, Bean> entry : config.getBeans().entrySet()) {
-            try {
-                Class<?> beanClass = Class.forName(entry.getValue().getClassname());
-                if (beanType.isAssignableFrom(beanClass)) {
-                    return entry.getKey();
-                }
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class not found for bean: " + entry.getKey(), e);
-            }
-        }
-        return null;
+        return BeanAnalyzer.findBeanNameByType(beanType, config.getBeans());
     }
 
     private List<String> findAllDependencies(String beanName) {
@@ -125,7 +118,7 @@ public class Cocina {
             throw new IllegalArgumentException("Bean not found: " + beanName);
         }
 
-        List<String> beanDependencies = BeanAnalyzer.getConstructorDependencies(bean);
+        List<String> beanDependencies = BeanAnalyzer.getConstructorDependencies(bean, config.getBeans());
         for (String dependency : beanDependencies) {
             collectDependencies(dependency, dependencies);
         }
@@ -145,24 +138,46 @@ public class Cocina {
         }
     }
 
-    private Object createBeanInstance(Bean beanDefinition) throws Exception {
-        Class<?> beanClass = Class.forName(beanDefinition.getClassname());
+    private Constructor<?> findSuitableConstructor(Class<?> beanClass) {
+        Constructor<?>[] constructors = beanClass.getConstructors();
+        if (constructors.length == 1) return constructors[0];
 
-        List<Object> constructorArgs = new ArrayList<>();
-        if (beanDefinition.getConstructorArgs() != null) {
-            for (ConstructorArg arg : beanDefinition.getConstructorArgs()) {
-                Object argValue = resolveArgumentValue(arg);
-                constructorArgs.add(argValue);
+        for (Constructor<?> c : constructors) {
+            if (c.isAnnotationPresent(Inject.class)) {
+                return c;
             }
         }
 
-        Class<?>[] argTypes = constructorArgs.stream()
-                .map(Object::getClass)
-                .toArray(Class<?>[]::new);
+        throw new RuntimeException("No suitable constructor found in " + beanClass.getName());
+    }
 
-        Constructor<?> constructor = beanClass.getConstructor(argTypes);
+    private Object createBeanInstance(Bean beanDefinition) throws Exception {
+        Class<?> beanClass = Class.forName(beanDefinition.getClassname());
 
-        return constructor.newInstance(constructorArgs.toArray());
+        Constructor<?> constructor = findSuitableConstructor(beanClass);
+
+
+        Parameter[] parameters = constructor.getParameters();
+        Object[] args = new Object[parameters.length];
+
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+
+            if (beanDefinition.getConstructorArgs() != null && i < beanDefinition.getConstructorArgs().size()) {
+                args[i] = resolveArgumentValue(beanDefinition.getConstructorArgs().get(i));
+                continue;
+            }
+
+            Named namedAnnotation = parameter.getAnnotation(Named.class);
+            if (namedAnnotation != null) {
+                args[i] = getIngrediente(namedAnnotation.value());
+                continue;
+            }
+
+            args[i] = getIngrediente(parameter.getType());
+        }
+
+        return constructor.newInstance(args);
     }
 
     private Object resolveArgumentValue(ConstructorArg arg) {
