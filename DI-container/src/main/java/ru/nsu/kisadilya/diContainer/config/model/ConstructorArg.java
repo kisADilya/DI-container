@@ -46,6 +46,7 @@ public class ConstructorArg {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Object convertComplexType(String typeName, String value) {
         try {
             Class<?> targetClass = Class.forName(typeName);

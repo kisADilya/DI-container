@@ -205,22 +205,37 @@ public class Cocina {
     private Object createBeanInstance(Bean beanDefinition) throws Exception {
         Class<?> beanClass = Class.forName(beanDefinition.getClassname());
 
+        List<Object> constructorArgs = getConstructorArgsObjects(beanDefinition);
+
+        if (beanDefinition.getScope() == BeanScope.THREAD) {
+            return ThreadFactory.createThreadScopedBean(beanClass, constructorArgs);
+        }
+
         Constructor<?> constructor = findSuitableConstructor(beanClass);
 
+        Class<?>[] argTypes = constructorArgs.stream()
+                .map(Object::getClass)
+                .toArray(Class<?>[]::new);
 
         Parameter[] parameters = constructor.getParameters();
+
         Object[] args = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
 
-            if (beanDefinition.getConstructorArgs() != null && i < beanDefinition.getConstructorArgs().size()) {
-                args[i] = resolveArgumentValue(beanDefinition.getConstructorArgs().get(i));
+            if (parameter.getType().equals(Provider.class)) {
+                args[i] = getProviderOf(argTypes[i]);
                 continue;
             }
 
             if (parameter.isAnnotationPresent(Named.class)) {
                 args[i] = getIngrediente(parameter.getAnnotation(Named.class).value());
+                continue;
+            }
+
+            if (beanDefinition.getConstructorArgs() != null && i < beanDefinition.getConstructorArgs().size()) {
+                args[i] = resolveArgumentValue(beanDefinition.getConstructorArgs().get(i));
                 continue;
             }
 
