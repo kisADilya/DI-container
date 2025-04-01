@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 
 @Getter
 @Setter
+@SuppressWarnings("uncheled")
 public class ConstructorArg {
     private String type;
     private Object value;
@@ -45,6 +46,7 @@ public class ConstructorArg {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Object convertComplexType(String typeName, String value) {
         try {
             Class<?> targetClass = Class.forName(typeName);

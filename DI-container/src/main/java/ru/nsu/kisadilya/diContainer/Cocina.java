@@ -13,6 +13,7 @@ import ru.nsu.kisadilya.diContainer.config.model.ConstructorArg;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -141,23 +142,13 @@ public class Cocina {
         for (var entry : config.getBeans().entrySet()) {
             String beanName = entry.getKey();
             Bean bean = entry.getValue();
-            List<String> dependencies = BeanAnalyzer.getConstructorDependencies(bean);
+            List<String> dependencies = BeanAnalyzer.getConstructorDependencies(bean, config.getBeans());
             dependencyGraph.addDependency(beanName, dependencies);
         }
     }
 
     private String findBeanNameByType(Class<?> beanType) {
-        for (Map.Entry<String, Bean> entry : config.getBeans().entrySet()) {
-            try {
-                Class<?> beanClass = Class.forName(entry.getValue().getClassname());
-                if (beanType.isAssignableFrom(beanClass)) {
-                    return entry.getKey();
-                }
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class not found for bean: " + entry.getKey(), e);
-            }
-        }
-        return null;
+        return BeanAnalyzer.findBeanNameByType(beanType, config.getBeans());
     }
 
     private List<String> findAllDependencies(String beanName) {
@@ -178,7 +169,7 @@ public class Cocina {
             throw new IllegalArgumentException("Bean not found: " + beanName);
         }
 
-        List<String> beanDependencies = BeanAnalyzer.getConstructorDependencies(bean);
+        List<String> beanDependencies = BeanAnalyzer.getConstructorDependencies(bean, config.getBeans());
         for (String dependency : beanDependencies) {
             collectDependencies(dependency, dependencies);
         }
@@ -198,6 +189,19 @@ public class Cocina {
         }
     }
 
+    private Constructor<?> findSuitableConstructor(Class<?> beanClass) {
+        Constructor<?>[] constructors = beanClass.getConstructors();
+        if (constructors.length == 1) return constructors[0];
+
+        for (Constructor<?> c : constructors) {
+            if (c.isAnnotationPresent(Inject.class)) {
+                return c;
+            }
+        }
+
+        throw new RuntimeException("No suitable constructor found in " + beanClass.getName());
+    }
+
     private Object createBeanInstance(Bean beanDefinition) throws Exception {
         Class<?> beanClass = Class.forName(beanDefinition.getClassname());
 
@@ -207,54 +211,38 @@ public class Cocina {
             return ThreadFactory.createThreadScopedBean(beanClass, constructorArgs);
         }
 
+        Constructor<?> constructor = findSuitableConstructor(beanClass);
+
         Class<?>[] argTypes = constructorArgs.stream()
                 .map(Object::getClass)
                 .toArray(Class<?>[]::new);
-        try {
-            Constructor<?> constructor = beanClass.getConstructor(argTypes);
-            Object beanInstance = constructor.newInstance(constructorArgs.toArray());
 
-            beanInstance = initializeFields(beanInstance);
+        Parameter[] parameters = constructor.getParameters();
 
-            return beanInstance;
-        } catch (NoSuchMethodException e) {
-            //adding providers
+        Object[] args = new Object[parameters.length];
 
-            var optionalConstructor = Arrays.stream(beanClass.getConstructors())
-                    .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
-                    .filter(constructor -> constructor.getParameterCount() == argTypes.length)
-                    .findFirst();
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
 
-            if (optionalConstructor.isEmpty()) {
-                System.err.println("No constructor found");
-                throw e;
+            if (parameter.getType().equals(Provider.class)) {
+                args[i] = getProviderOf(argTypes[i]);
+                continue;
             }
 
-            var constructor = optionalConstructor.get();
-
-            Class<?>[] constructorArgTypes = constructor.getParameterTypes();
-            for (int i = 0; i < constructorArgTypes.length; i++) {
-                if (constructorArgTypes[i].equals(Provider.class)) {
-                    constructorArgs.set(i, getProviderOf(argTypes[i]));
-                }
+            if (parameter.isAnnotationPresent(Named.class)) {
+                args[i] = getIngrediente(parameter.getAnnotation(Named.class).value());
+                continue;
             }
 
-            Object beanInstance = constructor.newInstance(constructorArgs.toArray());
+            if (beanDefinition.getConstructorArgs() != null && i < beanDefinition.getConstructorArgs().size()) {
+                args[i] = resolveArgumentValue(beanDefinition.getConstructorArgs().get(i));
+                continue;
+            }
 
-            beanInstance = initializeFields(beanInstance);
-
-            return beanInstance;
+            args[i] = getIngrediente(parameter.getType());
         }
-    }
 
-    private Object getProviderOf(Class<?> clazz) {
-        Bean bean = config.getByBeanType(clazz.getName());
-        if (bean == null) {
-            throw new IllegalArgumentException("Bean of type " + clazz.getName() + " not found in config");
-        }
-        String beanName = findBeanNameByType(clazz);
-
-        return getProviderOf(beanName, clazz);
+        return constructor.newInstance(args);
     }
 
     private Object getProviderOf(String beanName, Class<?> clazz) {
@@ -267,6 +255,29 @@ public class Cocina {
 
         return ProviderFactory.createProvider(clazz, constructorArgs.toArray());
     }
+
+    private List<Object> getConstructorArgsObjects(Bean beanDefinition) {
+        List<Object> constructorArgs = new ArrayList<>();
+        if (beanDefinition.getConstructorArgs() != null) {
+            for (ConstructorArg arg : beanDefinition.getConstructorArgs()) {
+                Object argValue = resolveArgumentValue(arg);
+                constructorArgs.add(argValue);
+            }
+        }
+        return constructorArgs;
+    }
+
+    private Object getProviderOf(Class<?> clazz) {
+        Bean bean = config.getByBeanType(clazz.getName());
+        if (bean == null) {
+            throw new IllegalArgumentException("Bean of type " + clazz.getName() + " not found in config");
+        }
+        String beanName = findBeanNameByType(clazz);
+
+        return getProviderOf(beanName, clazz);
+    }
+
+
 
     private Object initializeFields(Object bean) {
         List<Field> fieldsToInit = Arrays.stream(bean.getClass().getDeclaredFields())
@@ -296,17 +307,6 @@ public class Cocina {
         }
 
         return bean;
-    }
-
-    private List<Object> getConstructorArgsObjects(Bean beanDefinition) {
-        List<Object> constructorArgs = new ArrayList<>();
-        if (beanDefinition.getConstructorArgs() != null) {
-            for (ConstructorArg arg : beanDefinition.getConstructorArgs()) {
-                Object argValue = resolveArgumentValue(arg);
-                constructorArgs.add(argValue);
-            }
-        }
-        return constructorArgs;
     }
 
     private Object resolveArgumentValue(ConstructorArg arg) {

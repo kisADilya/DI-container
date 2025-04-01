@@ -6,8 +6,11 @@ import ru.nsu.kisadilya.diContainer.Cocina;
 
 
 public class Example {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
         Cocina cocina = new Cocina("src/main/java/ru/nsu/kisadilya/diContainer/example/config.json");
+        CarInterfaceTest carInterfaceTest = (CarInterfaceTest) cocina.getIngrediente(CarInterfaceTest.class);
+        carInterfaceTest.run();
+
         ThreadExample ex = cocina.getIngrediente("ThreadScopeExample");
         Runnable task1 = () -> {
             System.out.println(ex.getValue());

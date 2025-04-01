@@ -1,5 +1,9 @@
 {
   "beans": {
+    "CarInterfaceTest": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.CarInterfaceTest",
+      "scope": "singleton"
+    },
     "ru.nsu.kisadilya.diContainer.example.Car": {
       "classname": "ru.nsu.kisadilya.diContainer.example.Car",
       "scope": "singleton",
@@ -14,7 +18,7 @@
         }
       ]
     },
-    "Gearbox" : {
+    "Gearbox": {
       "classname": "ru.nsu.kisadilya.diContainer.example.Gearbox",
       "scope": "prototype",
       "constructorArgs": []
@@ -28,6 +32,10 @@
           "value": "MyPiston"
         }
       ]
+    },
+    "EngineV8": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.EngineV8",
+      "scope": "singleton"
     },
     "MyPiston": {
       "classname": "ru.nsu.kisadilya.diContainer.example.Piston",

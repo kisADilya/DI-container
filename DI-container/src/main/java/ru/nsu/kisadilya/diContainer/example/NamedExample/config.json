@@ -1,0 +1,57 @@
+{
+  "beans": {
+    "Car": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Car",
+      "scope": "singleton"
+    },
+    "Engine": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Engine",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "Piston"
+        }
+      ]
+    },
+    "CoolEngine": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Engine",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "CoolPiston"
+        }
+      ]
+    },
+    "Piston": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Piston",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "String",
+          "value": "up"
+        },
+        {
+          "type": "String",
+          "value": "down"
+        }
+      ]
+    },
+    "CoolPiston": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Piston",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "String",
+          "value": "Coolup"
+        },
+        {
+          "type": "String",
+          "value": "Cooldown"
+        }
+      ]
+    }
+  }
+}
+
