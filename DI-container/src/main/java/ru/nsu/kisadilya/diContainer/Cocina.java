@@ -1,13 +1,13 @@
 package ru.nsu.kisadilya.diContainer;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import lombok.Getter;
 import ru.nsu.kisadilya.diContainer.config.ConfigReader;
 import ru.nsu.kisadilya.diContainer.config.model.Bean;
 import ru.nsu.kisadilya.diContainer.config.model.BeanConstructorArg;
 import ru.nsu.kisadilya.diContainer.config.model.Config;
 import ru.nsu.kisadilya.diContainer.config.model.ConstructorArg;
-import ru.nsu.kisadilya.diContainer.config.model.Named;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
@@ -168,9 +168,8 @@ public class Cocina {
                 continue;
             }
 
-            Named namedAnnotation = parameter.getAnnotation(Named.class);
-            if (namedAnnotation != null) {
-                args[i] = getIngrediente(namedAnnotation.value());
+            if (parameter.isAnnotationPresent(Named.class)) {
+                args[i] = getIngrediente(parameter.getAnnotation(Named.class).value());
                 continue;
             }
 

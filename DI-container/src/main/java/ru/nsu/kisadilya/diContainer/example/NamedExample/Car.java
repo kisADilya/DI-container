@@ -1,7 +1,7 @@
 package ru.nsu.kisadilya.diContainer.example.NamedExample;
 
 import jakarta.inject.Inject;
-import ru.nsu.kisadilya.diContainer.config.model.Named;
+import jakarta.inject.Named;
 
 public class Car {
     private final Engine engine;

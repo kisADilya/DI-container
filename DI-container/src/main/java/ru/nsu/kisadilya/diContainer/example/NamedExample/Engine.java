@@ -1,6 +1,5 @@
 package ru.nsu.kisadilya.diContainer.example.NamedExample;
 
-import ru.nsu.kisadilya.diContainer.config.model.Named;
 
 public class Engine {
     private final Piston piston;
