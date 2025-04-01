@@ -11,7 +11,8 @@ public class ConfigReader {
         try {
             return objectMapper.readValue(new File(filename), Config.class);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Config file " + filename + " is invalid");
+//            throw new IllegalArgumentException("Config file " + filename + " is invalid");
+            throw new RuntimeException(e);
         }
     }
 }
