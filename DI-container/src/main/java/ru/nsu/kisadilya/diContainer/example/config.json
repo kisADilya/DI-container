@@ -76,6 +76,11 @@
           "value": "Sasha"
         }
       ]
+    },
+    "ThreadScopeExample": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.ThreadExample",
+      "scope": "thread",
+      "constructorArgs": []
     }
   }
 }
