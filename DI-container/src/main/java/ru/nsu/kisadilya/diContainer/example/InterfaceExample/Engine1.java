@@ -1,14 +1,14 @@
-package ru.nsu.kisadilya.diContainer.example.NamedExample;
+package ru.nsu.kisadilya.diContainer.example.InterfaceExample;
 
 import lombok.Getter;
 
 @Getter
-public class Engine {
+public class Engine1 implements EngineInterface {
     private final Piston piston;
 
-    public Engine(Piston piston) {
+    public Engine1(Piston piston) {
         this.piston = piston;
-        System.out.println("so am i");
+        System.out.println("im just engine");
     }
 
     public void run() {

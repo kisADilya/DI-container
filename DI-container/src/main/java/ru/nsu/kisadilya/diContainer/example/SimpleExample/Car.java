@@ -1,6 +1,8 @@
 package ru.nsu.kisadilya.diContainer.example.SimpleExample;
 
+import lombok.Getter;
 
+@Getter
 public class Car {
     private final Engine engine;
 

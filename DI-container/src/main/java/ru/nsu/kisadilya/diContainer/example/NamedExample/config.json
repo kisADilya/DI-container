@@ -1,7 +1,7 @@
 {
   "beans": {
     "Car": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Car",
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.NamedCar",
       "scope": "singleton"
     },
     "Engine": {
@@ -15,7 +15,7 @@
       ]
     },
     "CoolEngine": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.Engine",
+      "classname": "ru.nsu.kisadilya.diContainer.example.NamedExample.CoolEngine",
       "scope": "singleton",
       "constructorArgs": [
         {

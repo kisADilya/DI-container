@@ -2,11 +2,13 @@ package ru.nsu.kisadilya.diContainer.example.NamedExample;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import lombok.Getter;
 
-public class Car {
-    private final Engine engine;
+@Getter
+public class NamedCar {
+    private final CoolEngine engine;
     @Inject
-    public Car(@Named("CoolEngine") Engine engine) {
+    public NamedCar(@Named("CoolEngine") CoolEngine engine) {
         this.engine = engine;
         System.out.println("Car created with engine: " + engine.getClass().getSimpleName());
     }

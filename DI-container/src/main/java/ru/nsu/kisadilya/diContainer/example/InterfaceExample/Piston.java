@@ -1,5 +1,8 @@
 package ru.nsu.kisadilya.diContainer.example.InterfaceExample;
 
+import lombok.Getter;
+
+@Getter
 public class Piston {
     private final String up;
     private final String down;

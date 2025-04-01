@@ -1,7 +1,8 @@
 package ru.nsu.kisadilya.diContainer.example.SimpleExample;
 
-import ru.nsu.kisadilya.diContainer.example.SimpleExample.Piston;
+import lombok.Getter;
 
+@Getter
 public class Engine {
     private final Piston piston;
 
