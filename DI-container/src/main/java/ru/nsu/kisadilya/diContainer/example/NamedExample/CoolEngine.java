@@ -3,12 +3,12 @@ package ru.nsu.kisadilya.diContainer.example.NamedExample;
 import lombok.Getter;
 
 @Getter
-public class Engine {
+public class CoolEngine {
     private final Piston piston;
 
-    public Engine(Piston piston) {
+    public CoolEngine(Piston piston) {
         this.piston = piston;
-        System.out.println("so am i");
+        System.out.println("i am cool engine");
     }
 
     public void run() {

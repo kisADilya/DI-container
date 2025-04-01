@@ -1,9 +1,12 @@
 package ru.nsu.kisadilya.diContainer.example.InterfaceExample;
 
-public class Engine implements EngineInterface {
+import lombok.Getter;
+
+@Getter
+public class InterfaceEngine implements EngineInterface {
     private final Piston piston;
 
-    public Engine(Piston piston) {
+    public InterfaceEngine(Piston piston) {
         this.piston = piston;
         System.out.println("so am i");
     }

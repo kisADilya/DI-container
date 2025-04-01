@@ -1,8 +1,14 @@
 {
   "beans": {
     "Car": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.InterfaceExample.Car",
-      "scope": "singleton"
+      "classname": "ru.nsu.kisadilya.diContainer.example.InterfaceExample.InterfaceCar",
+      "scope": "singleton",
+      "constructorArgs": [
+        {
+          "type": "ref",
+          "value": "CoolEngine"
+        }
+      ]
     },
     "Engine": {
       "classname": "ru.nsu.kisadilya.diContainer.example.InterfaceExample.Engine",
@@ -15,7 +21,7 @@
       ]
     },
     "CoolEngine": {
-      "classname": "ru.nsu.kisadilya.diContainer.example.InterfaceExample.Engine",
+      "classname": "ru.nsu.kisadilya.diContainer.example.InterfaceExample.InterfaceEngine",
       "scope": "singleton",
       "constructorArgs": [
         {

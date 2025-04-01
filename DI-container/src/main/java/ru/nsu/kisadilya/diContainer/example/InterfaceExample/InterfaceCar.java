@@ -1,12 +1,14 @@
 package ru.nsu.kisadilya.diContainer.example.InterfaceExample;
 
 import jakarta.inject.Inject;
+import lombok.Getter;
 
-public class Car implements CarInterface {
+@Getter
+public class InterfaceCar implements CarInterface {
     private final EngineInterface engine;
 
     @Inject
-    public Car(EngineInterface engine) {
+    public InterfaceCar(EngineInterface engine) {
         this.engine = engine;
         System.out.println("Car created with engine: " + engine.getClass().getSimpleName());
     }
