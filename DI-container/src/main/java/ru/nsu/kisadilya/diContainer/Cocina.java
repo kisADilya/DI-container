@@ -242,7 +242,9 @@ public class Cocina {
             args[i] = getIngrediente(parameter.getType());
         }
 
-        return constructor.newInstance(args);
+        Object instance = constructor.newInstance(args);
+
+        return initializeFields(instance);
     }
 
     private Object getProviderOf(String beanName, Class<?> clazz) {

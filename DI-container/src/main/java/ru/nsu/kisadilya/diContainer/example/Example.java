@@ -8,8 +8,8 @@ import ru.nsu.kisadilya.diContainer.Cocina;
 public class Example {
     public static void main(String[] args) throws Exception{
         Cocina cocina = new Cocina("src/main/java/ru/nsu/kisadilya/diContainer/example/config.json");
-        CarInterfaceTest carInterfaceTest = (CarInterfaceTest) cocina.getIngrediente(CarInterfaceTest.class);
-        carInterfaceTest.run();
+//        CarInterfaceTest carInterfaceTest = (CarInterfaceTest) cocina.getIngrediente(CarInterfaceTest.class);
+//        carInterfaceTest.run();
 
         ThreadExample ex = cocina.getIngrediente("ThreadScopeExample");
         Runnable task1 = () -> {
@@ -33,10 +33,10 @@ public class Example {
 
         Car car = cocina.getIngrediente(Car.class);
 //        car1.run();
-//        car.run();
-        Provider<Gearbox> provider = cocina.getIngredienteProvider("Gearbox", Gearbox.class);
+        car.run();
+//        Provider<Gearbox> provider = cocina.getIngredienteProvider("Gearbox", Gearbox.class);
 //        Provider<Gearbox> provider = cocina.getIngredienteProvider(Gearbox.class);
-        provider.get().shiftDown();
+//        provider.get().shiftDown();
 //        Engine1 engine1 = cocina.getIngrediente("Engine1");
 //        Piston1 piston1 = cocina.getIngrediente("MyPiston1");
 //        engine1.run();
