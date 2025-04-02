@@ -89,6 +89,12 @@
       "classname": "ru.nsu.kisadilya.diContainer.example.ThreadExample",
       "scope": "thread",
       "constructorArgs": []
+    },
+
+    "SingletonWithThread": {
+      "classname": "ru.nsu.kisadilya.diContainer.example.SingletonWithThread",
+      "scope": "singleton",
+      "constructorArgs": []
     }
   }
 }

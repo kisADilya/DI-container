@@ -9,6 +9,7 @@ import ru.nsu.kisadilya.diContainer.example.InterfaceExample.InterfaceEngine;
 import ru.nsu.kisadilya.diContainer.example.NamedExample.CoolEngine;
 import ru.nsu.kisadilya.diContainer.example.NamedExample.NamedCar;
 import ru.nsu.kisadilya.diContainer.example.SimpleExample.Car;
+import ru.nsu.kisadilya.diContainer.example.SingletonWithThread;
 import ru.nsu.kisadilya.diContainer.example.ThreadExample;
 
 import java.util.concurrent.Callable;
@@ -88,8 +89,26 @@ public class MainTest {
 
         Future<String> result1 = executor.submit(task1);
         Future<String> result2 = executor.submit(task2);
-        assertNotNull(result1.get(), result2.get());
+        assertNotEquals(result1.get(), result2.get());
 
 
     }
+
+    @Test
+    public void mixedTest() throws ExecutionException, InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        Cocina cocina = new Cocina("src/main/java/ru/nsu/kisadilya/diContainer/example/config.json");
+        SingletonWithThread ex = cocina.getIngrediente(SingletonWithThread.class);
+
+        Callable<String> task1 = () -> ex.getThreadExample().getValue();
+        Callable<String> task2 = () -> ex.getThreadExample().getValue();
+
+
+        Future<String> result1 = executor.submit(task1);
+        Future<String> result2 = executor.submit(task2);
+
+        assertNotEquals(result1.get(), result2.get());
+    }
+
 }
